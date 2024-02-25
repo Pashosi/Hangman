@@ -86,30 +86,42 @@ def greeting():  # приветствие
     n = input()
     if n in ['y', 'да', 'го', 'yes', 'д']:
         word = get_words()
-        input_letter(word)
-
+        game(word)
     else:
         print('Ну ладно')
 
 
-def input_letter(word: str):
-    count = 0
-    print(HANGMAN[count])
+def basket_miss_latter(letters_list: list, letter):
+    if letter not in letters_list:
+        letters_list.append(letter)
+        return True
+    else:
+        return False
+
+
+def game(word: str):
+    count = -1
+    miss_letters_list = []
+    # print(HANGMAN[count])
     print('*' * len(word))
-    for i in sys.stdin:
-        if bool(re.search(r'[а-яА-Я]', i.strip())):
-            if i.strip('\n') in word:
-                word = ''.join([letter.upper() if (i.strip('\n') == letter) else letter for letter in word])
+    for letter_input in sys.stdin:
+        letter_input = letter_input.strip()
+        if bool(re.search(r'[а-яА-Я]', letter_input)):
+            if letter_input in word:
+                word = ''.join([letter.upper() if (letter_input == letter) else letter for letter in word])
                 print(''.join(['*' if i.islower() else i for i in word]))
                 if all(i.isupper() for i in word):
                     print('Вы победили')
                     greeting()
-            elif i.strip('\n').upper() in word:
+            elif letter_input.upper() in word:
                 print('Такую букву уже вводили')
+            elif len(letter_input) > 1:
+                print('Писать по одной букве')
             else:
                 try:
                     count += 1
-                    print(HANGMAN[count])
+                    if basket_miss_latter(miss_letters_list, letter_input):
+                        print(HANGMAN[count])
                     print(''.join(['*' if i.islower() else i for i in word]))
                 except IndexError:
                     print('Вы проиграли')
@@ -118,5 +130,5 @@ def input_letter(word: str):
             print('Не правильный символ')
 
 
-
-greeting()
+if __name__ == '__main__':
+    greeting()
